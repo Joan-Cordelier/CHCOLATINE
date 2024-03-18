@@ -9,5 +9,4 @@
 
 int main(void)
 {
-   return (my_putstr("I love chocolatines\n"));
 }
