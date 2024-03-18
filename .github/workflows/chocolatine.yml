@@ -9,6 +9,51 @@ on:
             - " ga-ignore-"
 
 jobs:
+    check_coding_style:
+        runs-on: ubuntu-latest
+        container: ghcr.io/epitech/coding-style-checker:latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: coding-style $(pwd) $(pwd)
+              run: check.sh . /tmp
+            - name: displays each coding style error
+              run: |
+                input=/tmp/coding-style-reports.log
+                while IFS= read -r -a line; do
+                  tab=($(printf "%s" "$line"|cut -d':' --output-delimiter=' ' -f1-))
+                  echo "::error title=${tab[2]} coding style error,path=${tab[0]},line=${tab[1]}::${tab[3]}"
+                done < $input
+            - name: is any codingstyle error
+              run: |
+                NB=$(cat /tmp/coding-style-reports.log | wc -l)
+                if [ $NB -gt 0 ]; then
+                  exit 1
+                fi
+
+
+    check_program_compilation:
+        runs-on: ubuntu-latest
+        container: epitechcontent/epitest-docker
+        needs: check_coding_style
+        timeout-minutes: 2
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: make
+              run: make
+            - name: make clean
+              run: make clean
+            - name: is executable
+              run: |
+                for executable in ${{ vars.EXECUTABLES }};do
+                 if [ ! -x "$executable" ]; then
+                  echo "File $executable does not exist or is not executable"
+                  exit 1
+                fi
+                done
+
+
     mirroring_repo:
         runs-on: ubuntu-latest
         if: github.event_name == 'push'
