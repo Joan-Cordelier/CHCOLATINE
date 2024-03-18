@@ -19,7 +19,6 @@ Test (my_putstr, simple_str, .init = redirect_all_std)
 {
     char *str = "Hello word";
 
-    printf("ici\n");
     cr_assert(my_putstr(str));
     cr_assert_stdout_eq_str("Hello word");
 }
