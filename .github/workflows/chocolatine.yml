@@ -22,7 +22,7 @@ jobs:
                 input=/tmp/coding-style-reports.log
                 while IFS= read -r -a line; do
                   tab=($(printf "%s" "$line"|cut -d':' --output-delimiter=' ' -f1-))
-                  echo "::error title=${tab[2]} coding style error:${tab[0]}#${tab[3]}::${tab[3]}"
+                  echo "::error title=${tab[2]} coding style error: ${tab[0]#./}#${tab[3]#C-}::${tab[3]}"
                 done < $input
             - name: is any codingstyle error
               run: |
